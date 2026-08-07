@@ -37,19 +37,15 @@
 </style>
 </head>
 <body>
-
 <h1>📄 MyCV Generator</h1>
 <p>এক ক্লিকে Facebook থেকে তথ্য এনে CV বানান</p>
-
 <button id="fb-login-btn" onclick="loginWithFacebook()">Continue with Facebook</button>
-
 <div id="result"></div>
-
 <div id="fb-root"></div>
 <script>
   window.fbAsyncInit = function() {
     FB.init({
-      appId      : 'YOUR_APP_ID',1582314853547372
+      appId      : '1582314853547372',
       cookie     : true,
       xfbml      : true,
       version    : 'v21.0'
@@ -62,7 +58,6 @@
      js.src = "https://connect.facebook.net/en_US/sdk.js";
      fjs.parentNode.insertBefore(js, fjs);
    }(document, 'script', 'facebook-jssdk'));
-
   function loginWithFacebook() {
     FB.login(function(response) {
       if (response.authResponse) {
@@ -80,6 +75,5 @@
     }, {scope: 'public_profile,email'});
   }
 </script>
-
 </body>
 </html>
