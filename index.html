@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<title>MyCV Generator</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #1a1a2e;
+    color: white;
+    text-align: center;
+    padding: 50px 20px;
+  }
+  h1 { color: #c9a227; }
+  #fb-login-btn {
+    background: #1877f2;
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 20px;
+  }
+  #result {
+    margin-top: 30px;
+    background: white;
+    color: black;
+    padding: 20px;
+    border-radius: 10px;
+    display: inline-block;
+  }
+  #result img {
+    border-radius: 50%;
+    width: 100px;
+  }
+</style>
+</head>
+<body>
+<h1>📄 MyCV Generator</h1>
+<p>এক ক্লিকে Facebook থেকে তথ্য এনে CV বানান</p>
+<button id="fb-login-btn" onclick="loginWithFacebook()">Continue with Facebook</button>
+<div id="result"></div>
+<div id="fb-root"></div>
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1582314853547372',
+      cookie     : true,
+      xfbml      : true,
+      version    : 'v21.0'
+    });
+  };
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "https://connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+  function loginWithFacebook() {
+    FB.login(function(response) {
+      if (response.authResponse) {
+        FB.api('/me', {fields: 'name,picture.width(300).height(300),email'}, function(userInfo) {
+          document.getElementById('result').innerHTML = `
+            <h2>স্বাগতম, ${userInfo.name}!</h2>
+            <img src="${userInfo.picture.data.url}"><br>
+            <p>Email: ${userInfo.email || 'পাওয়া যায়নি'}</p>
+            <p>এখন CV তৈরি হচ্ছে...</p>
+          `;
+        });
+      } else {
+        alert('লগইন বাতিল করা হয়েছে');
+      }
+    }, {scope: 'public_profile,email'});
+  }
+</script>
+</body>
+</html>
