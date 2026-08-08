@@ -61,18 +61,17 @@
   function loginWithFacebook() {
     FB.login(function(response) {
       if (response.authResponse) {
-        FB.api('/me', {fields: 'name,picture.width(300).height(300),email'}, function(userInfo) {
+        FB.api('/me', {fields: 'name,picture.width(300).height(300)'}, function(userInfo) {
           document.getElementById('result').innerHTML = `
             <h2>স্বাগতম, ${userInfo.name}!</h2>
             <img src="${userInfo.picture.data.url}"><br>
-            <p>Email: ${userInfo.email || 'পাওয়া যায়নি'}</p>
             <p>এখন CV তৈরি হচ্ছে...</p>
           `;
         });
       } else {
         alert('লগইন বাতিল করা হয়েছে');
       }
-    }, {scope: 'public_profile,email'});
+    }, {scope: 'public_profile'});
   }
 </script>
 </body>
