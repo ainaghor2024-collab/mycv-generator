@@ -2,77 +2,291 @@
 <html lang="bn">
 <head>
 <meta charset="UTF-8">
-<title>MyCV Generator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>প্রোফাইল QR কার্ড জেনারেটর</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
-  body {
-    font-family: Arial, sans-serif;
-    background: #1a1a2e;
-    color: white;
-    text-align: center;
-    padding: 50px 20px;
+  :root{
+    --ink:#1b1f23;
+    --paper:#f6f3ec;
+    --line:#d8d2c4;
+    --accent:#1e5f4a;
+    --accent-soft:#e4efe9;
+    --gold:#b8933f;
   }
-  h1 { color: #c9a227; }
-  #fb-login-btn {
-    background: #1877f2;
-    color: white;
-    border: none;
-    padding: 15px 30px;
-    font-size: 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-top: 20px;
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 20% 10%, #234f3f 0%, #16332a 45%, #0f2620 100%);
+    font-family:'Segoe UI', 'Noto Sans Bengali', system-ui, sans-serif;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:32px 16px 60px;
+    color:var(--ink);
   }
-  #result {
-    margin-top: 30px;
-    background: white;
-    color: black;
-    padding: 20px;
-    border-radius: 10px;
-    display: inline-block;
+
+  .brand{
+    color:#eae4d3;
+    text-align:center;
+    margin-bottom:28px;
   }
-  #result img {
-    border-radius: 50%;
-    width: 100px;
+  .brand h1{
+    font-size:22px;
+    font-weight:700;
+    margin:0 0 6px;
+    letter-spacing:.3px;
+  }
+  .brand p{
+    margin:0;
+    font-size:13px;
+    color:#b9c9c0;
+  }
+
+  #loginBtn{
+    background:var(--gold);
+    color:#1b1f23;
+    border:none;
+    padding:14px 30px;
+    font-size:16px;
+    font-weight:700;
+    border-radius:8px;
+    cursor:pointer;
+    box-shadow:0 6px 18px rgba(0,0,0,.35);
+    transition:transform .15s ease;
+  }
+  #loginBtn:hover{ transform:translateY(-2px); }
+
+  #status{
+    color:#cfd8d3;
+    font-size:13px;
+    margin-top:14px;
+    min-height:18px;
+  }
+
+  #card{
+    display:none;
+    width:340px;
+    max-width:90vw;
+    background:var(--paper);
+    border-radius:18px;
+    padding:0;
+    overflow:hidden;
+    box-shadow:0 20px 50px rgba(0,0,0,.45);
+    margin-top:10px;
+    border:1px solid var(--line);
+  }
+  .card-top{
+    background:var(--accent);
+    padding:16px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .card-top .mark{
+    color:#f2ead2;
+    font-size:12px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    font-weight:700;
+  }
+  .card-top .tag{
+    color:var(--gold);
+    font-size:11px;
+    font-weight:700;
+    border:1px solid var(--gold);
+    padding:2px 8px;
+    border-radius:20px;
+  }
+
+  .card-body{
+    padding:26px 22px 20px;
+    text-align:center;
+  }
+  .photo-wrap{
+    width:88px;
+    height:88px;
+    border-radius:50%;
+    overflow:hidden;
+    margin:0 auto 14px;
+    border:3px solid var(--accent);
+    box-shadow:0 4px 12px rgba(0,0,0,.15);
+  }
+  .photo-wrap img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+  .name{
+    font-size:19px;
+    font-weight:700;
+    color:var(--ink);
+    margin:0 0 3px;
+  }
+  .sub{
+    font-size:11.5px;
+    color:#6b7a73;
+    letter-spacing:.5px;
+    text-transform:uppercase;
+    margin:0 0 18px;
+  }
+
+  .qr-frame{
+    background:#fff;
+    padding:14px;
+    border-radius:12px;
+    display:inline-block;
+    border:1px solid var(--line);
+  }
+  #qrcode{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .scan-hint{
+    font-size:11px;
+    color:#7c887f;
+    margin-top:12px;
+    letter-spacing:.3px;
+  }
+
+  .card-bottom{
+    background:var(--accent-soft);
+    padding:10px 20px;
+    text-align:center;
+    border-top:1px dashed var(--line);
+  }
+  .card-bottom span{
+    font-size:10.5px;
+    color:var(--accent);
+    font-weight:600;
+    letter-spacing:1px;
+  }
+
+  #downloadBtn{
+    display:none;
+    margin-top:22px;
+    background:#eae4d3;
+    color:#1b1f23;
+    border:none;
+    padding:12px 26px;
+    font-size:14px;
+    font-weight:700;
+    border-radius:8px;
+    cursor:pointer;
+  }
+
+  .footer-note{
+    margin-top:34px;
+    color:#8ea79a;
+    font-size:11px;
+    text-align:center;
+    max-width:320px;
   }
 </style>
 </head>
 <body>
-<h1>📄 MyCV Generator</h1>
-<p>এক ক্লিকে Facebook থেকে তথ্য এনে CV বানান</p>
-<button id="fb-login-btn" onclick="loginWithFacebook()">Continue with Facebook</button>
-<div id="result"></div>
-<div id="fb-root"></div>
+
+<div class="brand">
+  <h1>প্রোফাইল QR কার্ড</h1>
+  <p>ক্লিক করুন — আপনার নিজের QR আইডি কার্ড তৈরি হয়ে যাবে</p>
+</div>
+
+<button id="loginBtn" onclick="loginWithFacebook()">Facebook দিয়ে কার্ড তৈরি করুন</button>
+<div id="status"></div>
+
+<div id="card">
+  <div class="card-top">
+    <span class="mark">Verified ID</span>
+    <span class="tag">QR</span>
+  </div>
+  <div class="card-body">
+    <div class="photo-wrap"><img id="userPhoto" src="" alt="photo"></div>
+    <p class="name" id="userName">—</p>
+    <p class="sub">Facebook Profile</p>
+    <div class="qr-frame"><div id="qrcode"></div></div>
+    <p class="scan-hint">স্ক্যান করলেই প্রোফাইলে চলে যাবে</p>
+  </div>
+  <div class="card-bottom"><span>SCAN • CONNECT • FOLLOW</span></div>
+</div>
+
+<button id="downloadBtn" onclick="downloadCard()">কার্ড ডাউনলোড করুন</button>
+
+<p class="footer-note">আপনার নাম, প্রোফাইল ছবি ও পাবলিক প্রোফাইল লিংক ছাড়া আর কোনো তথ্য সংগ্রহ করা হয় না।</p>
+
 <script>
+  const FB_APP_ID = "1582314853547372";
+
   window.fbAsyncInit = function() {
     FB.init({
-      appId      : '1582314853547372',
-      cookie     : true,
-      xfbml      : true,
-      version    : 'v21.0'
+      appId: FB_APP_ID,
+      cookie: true,
+      xfbml: false,
+      version: 'v20.0'
     });
   };
+
   (function(d, s, id){
      var js, fjs = d.getElementsByTagName(s)[0];
-     if (d.getElementById(id)) {return;}
+     if (d.getElementById(id)) return;
      js = d.createElement(s); js.id = id;
      js.src = "https://connect.facebook.net/en_US/sdk.js";
      fjs.parentNode.insertBefore(js, fjs);
-   }(document, 'script', 'facebook-jssdk'));
-  function loginWithFacebook() {
-    FB.login(function(response) {
+  }(document, 'script', 'facebook-jssdk'));
+
+  function loginWithFacebook(){
+    document.getElementById('status').innerText = "লগইন হচ্ছে...";
+    FB.login(function(response){
       if (response.authResponse) {
-        FB.api('/me', {fields: 'name,picture.width(300).height(300),email'}, function(userInfo) {
-          document.getElementById('result').innerHTML = `
-            <h2>স্বাগতম, ${userInfo.name}!</h2>
-            <img src="${userInfo.picture.data.url}"><br>
-            <p>Email: ${userInfo.email || 'পাওয়া যায়নি'}</p>
-            <p>এখন CV তৈরি হচ্ছে...</p>
-          `;
-        });
+        fetchProfile();
       } else {
-        alert('লগইন বাতিল করা হয়েছে');
+        document.getElementById('status').innerText = "লগইন বাতিল হয়েছে। আবার চেষ্টা করুন।";
       }
-    }, {scope: 'public_profile,email'});
+    }, {scope: 'public_profile'});
+  }
+
+  function fetchProfile(){
+    FB.api('/me', {fields: 'id,name,picture.type(large)'}, function(res){
+      if (!res || res.error) {
+        document.getElementById('status').innerText = "প্রোফাইল তথ্য আনতে সমস্যা হয়েছে।";
+        return;
+      }
+
+      const profileUrl = "https://www.facebook.com/" + res.id;
+      const photoUrl = res.picture && res.picture.data ? res.picture.data.url : "";
+
+      document.getElementById('userName').innerText = res.name;
+      document.getElementById('userPhoto').src = photoUrl;
+
+      document.getElementById('qrcode').innerHTML = "";
+      new QRCode(document.getElementById('qrcode'), {
+        text: profileUrl,
+        width: 160,
+        height: 160,
+        colorDark: "#1e5f4a",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+
+      document.getElementById('status').innerText = "";
+      document.getElementById('card').style.display = "block";
+      document.getElementById('downloadBtn').style.display = "inline-block";
+      document.getElementById('loginBtn').style.display = "none";
+    });
+  }
+
+  function downloadCard(){
+    html2canvas(document.getElementById('card'), {scale: 3, useCORS: true}).then(canvas => {
+      const link = document.createElement('a');
+      link.download = 'profile-qr-card.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
   }
 </script>
 </body>
